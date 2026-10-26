@@ -1,0 +1,27 @@
+{
+  "name": "male_manny_simple_ue5",
+  "based_on": "male_mannequin_UE5",
+  "purpose": "Separate template for anim_Sitting_Down_01.FBX / 88-bone Manny Simple",
+  "corrective_root_fallbacks": {
+    "upperarm_correctiveRoot_l": "upperarm_l",
+    "upperarm_correctiveRoot_r": "upperarm_r",
+    "lowerarm_correctiveRoot_l": "lowerarm_l",
+    "lowerarm_correctiveRoot_r": "lowerarm_r",
+    "thigh_correctiveRoot_l": "thigh_l",
+    "thigh_correctiveRoot_r": "thigh_r",
+    "calf_correctiveRoot_l": "calf_l",
+    "calf_correctiveRoot_r": "calf_r"
+  },
+  "omitted_source_bones": [
+    "clavicle_pec_l",
+    "clavicle_pec_r"
+  ],
+  "original_template_sha256": {
+    "control_metadata.json": "112a97af4cafecb286b8589feaeb66c494f6c15f86ece6564164064c3c09b745",
+    "fk_to_source_links.json": "1075740e31d9a4748864ea4d9a87e0ec5519008127d6dfd5199e039fa25e2f3b",
+    "fk_to_source_nodes.json": "da6970ca78a23fcdff5a8856e6c799f8d8e873fc6164bf2c5a976421e56bf428",
+    "metarig.py": "54c5b78ee00a1e639abf4f348fda6c2e76e84539109582814f85c0136c30e062",
+    "source_to_deform_links.json": "10735306109a8e9f50bc96d3ff28efdea50258cb26fe769c2b69101b725a7af1",
+    "source_to_deform_nodes.json": "8138058897aa31cb442391deb5b14ece45944f971d55989eb5bd9ffc0e45638c"
+  }
+}
