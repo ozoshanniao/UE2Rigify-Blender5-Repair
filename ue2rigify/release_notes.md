@@ -1,3 +1,11 @@
+## Local Repair 1.8.0 — 2026-10-27
+
+* Ported OZO_Tools Animation Scale as a separate **UE to Rigify → Animation Scale** panel with **Check**, **Normalize Scale**, and result details.
+* Preserved the original OZO tool; independent operators/settings support coexistence. The normalization provenance marker remains interoperable.
+* Retained copy/verify/rollback handling, original Actions, fractional samples and full world-space bone/mesh verification.
+* Added regression coverage for supported imports, no-op repeats, unsupported inputs, failed-verification rollback and OZO coexistence.
+* Included GPL-3.0-or-later notices for the new combined package, with upstream MIT attribution preserved.
+
 ## Local Repair 1.7.8 — 2026-10-26
 
 * Added the separate **Male Manny Simple Ue5** template for the tested simplified Manny skeleton. Existing normal templates are preserved.

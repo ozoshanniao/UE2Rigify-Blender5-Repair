@@ -1,0 +1,24 @@
+{
+  "blender": "5.2.2 LTS",
+  "checks": [
+    "world bones/vertices, fractional samples, source preservation, frame restoration",
+    "repeat is a no-op with no frame stepping",
+    "mismatched original Action is rejected",
+    "unsupported nonuniform/animated scale, NLA and callbacks do not mutate data",
+    "verification failure restores data and removes only transaction copies",
+    "Pose Mode normalization preserves mode and world motion",
+    "original OZO and new operators/settings coexist and recognize shared provenance"
+  ],
+  "normalization": {
+    "skipped": false,
+    "factor": 0.009999999776482582,
+    "samples": 5,
+    "meshes": 1,
+    "location_curves": 3,
+    "bone_error": 2.457562461863554e-07,
+    "vertex_error": 1.708141695094041e-07,
+    "original_action": "ScaleTestRigAction",
+    "action": "ScaleTestRigAction_Scale1"
+  },
+  "ozo_source_sha256": "4872a4b2d47854c796610d40966a69e6f5715533b9908bbe1c2638db185f252a"
+}

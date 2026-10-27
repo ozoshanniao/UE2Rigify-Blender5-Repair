@@ -4,6 +4,7 @@ import json
 import math
 import sys
 import tempfile
+from dataclasses import asdict
 from pathlib import Path
 
 import addon_utils
@@ -26,7 +27,7 @@ try:
     addon_utils.enable('ue2rigify', default_set=True)
 finally:
     ue2rigify.templates.copy_default_templates = copy_defaults
-from ue2rigify.core import animation, scene, templates, utilities
+from ue2rigify.core import animation, animation_scale, scene, templates, utilities
 
 with tempfile.TemporaryDirectory(prefix='.tmp_manny_simple_', dir=ROOT / 'tests') as scratch:
     assert Path(scratch).resolve().is_relative_to((ROOT / 'tests').resolve())
@@ -45,24 +46,11 @@ with tempfile.TemporaryDirectory(prefix='.tmp_manny_simple_', dir=ROOT / 'tests'
     sc.frame_start, sc.frame_end = start, end
     sc.frame_set(start)
 
-    # Apply centimetre scale to both rest data and animated bone locations. FBX
-    # object-location channels are already in scene units and remain unchanged.
-    factor = source.scale.x
-    assert max(abs(value - factor) for value in source.scale) < 1e-7
-    if abs(factor - 1) > 1e-7:
-        bpy.ops.object.select_all(action='DESELECT')
-        source.select_set(True)
-        bpy.context.view_layer.objects.active = source
-        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-        for curve in animation.iter_fcurves(action, source):
-            multiplier = (factor if curve.data_path.startswith('pose.bones[') and curve.data_path.endswith('.location')
-                          else 1 / factor if curve.data_path == 'scale' else 1)
-            if multiplier != 1:
-                for point in curve.keyframe_points:
-                    point.co.y *= multiplier
-                    point.handle_left.y *= multiplier
-                    point.handle_right.y *= multiplier
-                curve.update()
+    # Exercise the actual 1.8 Animation Scale port before the retargeting flow.
+    bpy.context.view_layer.objects.active = source
+    source.select_set(True)
+    normalized = animation_scale.normalize_scale(bpy.context)
+    assert normalized.skipped or normalized.samples > 0
     sc.frame_set(start)
     folder = ROOT / 'ue2rigify/resources/rig_templates/b4_0/male_manny_simple_ue5'
     links = json.loads((folder / 'source_to_deform_links.json').read_text())
@@ -116,6 +104,7 @@ with tempfile.TemporaryDirectory(prefix='.tmp_manny_simple_', dir=ROOT / 'tests'
         'all_mapped_max_rotation_error_deg': max(error['rotation_error_deg'] for frame in per_frame for error in frame),
         'limitations': 'Existing ik_hand_gun, finger-base and neck approximations remain; this is not a lossless full-skeleton test.'
     }
+    report['scale_normalization'] = asdict(normalized)
     assert report['limb_max_position_error_cm'] < 0.05, report
     assert report['limb_max_rotation_error_deg'] < 0.1, report
     if args.report:

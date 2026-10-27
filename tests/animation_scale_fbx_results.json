@@ -1,0 +1,19 @@
+{
+  "blender": "5.2.2 LTS",
+  "source_bones": 88,
+  "meshes": 1,
+  "vertices": 48705,
+  "samples": 282,
+  "issues": [],
+  "result": {
+    "skipped": false,
+    "factor": 0.009999999776482582,
+    "samples": 282,
+    "meshes": 1,
+    "location_curves": 264,
+    "bone_error": 8.518073201288171e-06,
+    "vertex_error": 8.190267034226772e-06,
+    "original_action": "root|Unreal Take|Base Layer",
+    "action": "root|Unreal Take|Base Layer_Scale1"
+  }
+}

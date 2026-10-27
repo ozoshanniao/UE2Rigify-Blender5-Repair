@@ -12,19 +12,38 @@ This is an unofficial compatibility repair of UE to Rigify 1.7.6 for Blender 5. 
 - 原插件的代码、模板、资源及版权声明均予以保留。本仓库主要提供 Blender 5 动画接口兼容与相关烘焙修复。
 - Original code, templates, resources, and copyright notices are retained. This repository is independently maintained and is not endorsed by Epic Games or Poly Hammer.
 
-Upstream uses the **MIT License**. Its full notice is preserved in [LICENSE.md](LICENSE.md), and inside the installable add-on.
+Upstream uses the **MIT License**; its full notice is preserved in [LICENSE_UPSTREAM_MIT.md](LICENSE_UPSTREAM_MIT.md) and inside the add-on. Version **1.8.0** also incorporates OZO's **GPL-3.0-or-later** Animation Scale module. The combined 1.8.0 add-on is distributed under GPL-3.0-or-later; see [LICENSE.md](LICENSE.md) and [OZO attribution](ue2rigify/OZO_ANIMATION_SCALE_NOTICE.md). Original upstream MIT notices and permissions remain intact. Earlier 1.7.x archives and the standalone template ZIP are unchanged.
 
 ## 下载与安装 / Install
 
-1. 下载 [完整安装 ZIP（1.7.8）](dist/ue2rigify_1.7.8_blender5_repaired.zip)，在 GitHub 文件页面点击下载原始文件。
+1. 下载 [完整安装 ZIP（1.8.0）](dist/ue2rigify_1.8.0_blender5_repaired.zip)，在 GitHub 文件页面点击下载原始文件。
 2. 在 Blender 首选项中禁用旧版 UE to Rigify，通过“从磁盘安装”选择此 ZIP，替换旧版后重启 Blender。
 3. 启用 **Rigify** 与 **UE to Rigify (Blender 5 Repair)**。
 
 Download the ZIP above using GitHub's raw-file download button, then install it through Blender's **Install from Disk**. The repository's **Code → Download ZIP** archive is a source archive, not the Blender installer.
 
-版本标识为 **1.7.8**，仅用于区分本地修复版，并非官方上游版本。模块名仍为 `ue2rigify`，因此原版与修复版应替换安装，不能同时启用。
+版本标识为 **1.8.0（1.8）**，仅用于区分本地修复版，并非官方上游版本。模块名仍为 `ue2rigify`，因此原版与修复版应替换安装，不能同时启用。
 
-The local repair identifies itself as version **1.7.8** and keeps the `ue2rigify` module name for saved-file compatibility. Install it as a replacement for the original add-on.
+The local repair identifies itself as version **1.8.0** and keeps the `ue2rigify` module name for saved-file compatibility. Install it as a replacement for the original add-on.
+
+## 1.8：OZO Animation Scale / UE import scale normalization
+
+将 OZO_Tools 0.5.2 的 **Animation Scale** 功能移植到 **UE to Rigify → Animation Scale**。原 OZO 插件保持不变，两个工具可以同时启用；新工具无需依赖 OZO 安装。
+
+1. 在 Object/Pose 模式选中**原始导入的骨架对象**，在 Convert 之前运行。
+2. 打开 **Animation Scale**，确认 **Active** 显示的是要修复的骨架。
+3. 点击 **Check** 检查，再点 **Normalize Scale**。
+4. 通过后再选择对应模板并执行 **Convert**。
+
+它会复制骨架数据、子网格和 Action，将恒定、正数、XYZ 一致的物体缩放归一为 1，同时修正骨骼位移动画与关键帧手柄。工具逐帧比较世界空间骨骼端点和全部求值网格顶点，验证失败会回滚；原 Action 保留，工具不保存 blend 文件。它不改变动画时长，也不是角色身高匹配工具。
+
+The port preserves OZO's copy/verify/rollback workflow, with independent UE2Rigify operators and scene settings. It normalizes the **active imported armature** and supported direct child meshes before conversion. It is not applied automatically by Convert. The original Action is retained, and an already normalized input is a no-op.
+
+适用范围保持与 OZO 原工具一致：单个活动 Action、单个动作槽、单层和单个 keyframe strip。NLA、约束/驱动、变化或非均匀缩放、Shape Keys、共享/链接数据及不支持的网格变换会显示具体原因，不会强行处理。世界空间验证容差为 `2e-5` Blender 单位，基线数据上限为 512 MiB。
+
+Animation Scale requires Blender **4.4+**; it was runtime-tested on **5.2.2 LTS**. Existing older-Blender retargeting paths remain separate. See [OZO module notes](ue2rigify/OZO_ANIMATION_SCALE_NOTICE.md) and [regression results](tests/animation_scale_validation_results.json).
+
+实际 UE FBX 验证覆盖 88 根骨骼、48,705 个网格顶点和 282 帧，骨骼/顶点最大世界空间偏差分别约 `8.52e-6` / `8.19e-6` Blender 单位，均低于容差；随后使用 Manny Simple 模板完成 Rigify 转换。记录见 [原始 FBX 缩放检查](tests/animation_scale_fbx_results.json) 与 [1.8 完整流程](tests/manny_simple_1_8_validation_results.json)。
 
 ## 1.7.8：独立 Manny Simple 模板 / Separate Manny Simple template
 
@@ -67,6 +86,7 @@ Recorded reports: [full conversion](tests/validation_results.json), [sparse conv
 
 ```sh
 blender --background --factory-startup --python-exit-code 1 --python tests/test_action_slots.py
+blender --background --factory-startup --python-exit-code 1 --python tests/test_animation_scale.py
 ```
 
 The regression script checks shared-Action slot isolation and NLA slot ownership. It does not replace the scene-based retargeting validation above.
